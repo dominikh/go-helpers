@@ -1,0 +1,16 @@
+#!/bin/sh
+# go-git-affected COMMIT1 COMMIT2 - List packages that were touched between two git commits.
+#
+# COMMIT1 defaults to HEAD and COMMIT2 defaults to HEAD^, showing the
+# packages touched in the last commit.
+
+first="${1-HEAD}"
+second="${2-HEAD^}"
+repo=$(git rev-parse --show-toplevel)
+prefix="$GOPATH/src" # no trailing slash due to off-by-one in slicing
+n=${#prefix}
+
+git diff-tree --name-only -r "$first" "$second^" | xargs dirname | sort -u |
+    while read pkg; do
+        echo "${repo:$n}/${pkg}"
+    done

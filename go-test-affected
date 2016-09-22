@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# go-test-affected COMMIT1 COMMIT2 - Test all packages that were
+# affected by a range of commits.
+#
+# COMMIT1 defaults to HEAD and COMMIT2 defaults to HEAD^, testing the
+# packages affected in the last commit.
+
+affected=$(go-git-affected "$1" "$2")
+(
+    echo "$affected"
+    echo "$affected" | rdeps -stdin
+) | {
+    ret=0
+    while read pkg; do
+        go test "$pkg"
+        c=$?
+        [ $c -ne 0 ] && ret=$c
+    done
+    exit $ret
+}
