@@ -7,10 +7,9 @@
 first="${1-HEAD}"
 second="${2-HEAD^}"
 repo=$(git rev-parse --show-toplevel)
-prefix="$GOPATH/src" # no trailing slash due to off-by-one in slicing
-n=${#prefix}
+prefix="$GOPATH/src"
 
 git diff-tree --name-only -r "$first" "$second^" | xargs dirname | sort -u |
     while read pkg; do
-        echo "${repo:$n}/${pkg}"
+        realpath -s -m --relative-to="$GOPATH/src" "$repo/$pkg"
     done
