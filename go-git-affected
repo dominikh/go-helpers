@@ -4,12 +4,12 @@
 # COMMIT1 defaults to HEAD and COMMIT2 defaults to HEAD^, showing the
 # packages touched in the last commit.
 
-first="${1-HEAD}"
-second="${2-HEAD^}"
+first="${1:-HEAD}"
+second="${2:-HEAD^}"
 repo=$(git rev-parse --show-toplevel)
 prefix="$GOPATH/src"
 
-git diff-tree --name-only -r "$first" "$second^" | xargs dirname | sort -u |
+git diff-tree --name-only -r "$first" "$second" | xargs dirname | sort -u |
     while read pkg; do
         realpath -s -m --relative-to="$GOPATH/src" "$repo/$pkg"
     done
